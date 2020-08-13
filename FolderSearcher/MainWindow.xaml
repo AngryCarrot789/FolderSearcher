@@ -1,0 +1,79 @@
+﻿<Window
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:FolderSearcher" xmlns:results="clr-namespace:FolderSearcher.Results"
+        xmlns:Converters="clr-namespace:FolderSearcher.Converters" x:Class="FolderSearcher.MainWindow"
+        mc:Ignorable="d"
+        Title="Folder Searcher" 
+        Height="500" Width="500"
+        MinWidth="475" MinHeight="300"
+        Style="{DynamicResource CustomWindowStyle}">
+    <Window.Resources>
+        <Converters:MultiBoolToEnumConverter x:Key="MultiBoolToEnumConverter"/>
+        <Converters:InvertBoolConverter x:Key="InvertBoolConverter"/>
+    </Window.Resources>
+    <Grid Margin="5">
+        <Grid Height="109" VerticalAlignment="Top">
+            <Label Content="Search for" HorizontalAlignment="Left" VerticalAlignment="Top"/>
+            <TextBox Text="{Binding SearchFor, UpdateSourceTrigger=PropertyChanged}" TextWrapping="NoWrap" Padding="4" VerticalAlignment="Top" Margin="71,0,95,0"/>
+            <Button Command="{Binding SearchCommand}" IsEnabled="{Binding IsSearching, UpdateSourceTrigger=PropertyChanged, Converter={StaticResource InvertBoolConverter}}" Content="Start Search" HorizontalAlignment="Right" VerticalAlignment="Top" Width="90" Height="26"/>
+            <Label Content="Start Folder" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="0,31,0,0"/>
+            <TextBox Text="{Binding StartFolder, UpdateSourceTrigger=PropertyChanged}" TextWrapping="NoWrap" Padding="4" VerticalAlignment="Top" Margin="71,31,122,0" BorderThickness="1 1 0 1"/>
+            <Button Command="{Binding SelectStartFolderCommand}" Content="..." HorizontalAlignment="Right" VerticalAlignment="Top" Width="27" Height="26" Margin="0,31,95,0"/>
+            <Button Command="{Binding CancelSearchCommand}" IsEnabled="{Binding IsSearching, UpdateSourceTrigger=PropertyChanged}" Content="Cancel Search" HorizontalAlignment="Right" VerticalAlignment="Top" Width="90" Height="26" Margin="0,31,0,0"/>
+            <Grid IsEnabled="{Binding IsSearching, UpdateSourceTrigger=PropertyChanged, Converter={StaticResource InvertBoolConverter}}" Height="52" VerticalAlignment="Bottom">
+                <Label Content="Searching for:" HorizontalAlignment="Left" VerticalAlignment="Top"/>
+                <RadioButton IsChecked="{Binding SearchPreferences, UpdateSourceTrigger=PropertyChanged, Converter={StaticResource MultiBoolToEnumConverter}, ConverterParameter=Folders}" Content="Folders" HorizontalAlignment="Left" Margin="83,3,0,0" VerticalAlignment="Top" Width="60"/>
+                <RadioButton IsChecked="{Binding SearchPreferences, UpdateSourceTrigger=PropertyChanged, Converter={StaticResource MultiBoolToEnumConverter}, ConverterParameter=Files}" Content="Files" HorizontalAlignment="Left" Margin="148,3,0,0" VerticalAlignment="Top" Width="50"/>
+                <RadioButton IsChecked="{Binding SearchPreferences, UpdateSourceTrigger=PropertyChanged, Converter={StaticResource MultiBoolToEnumConverter}, ConverterParameter=FileContents}" Content="File Contents" HorizontalAlignment="Left" Margin="203,3,0,0" VerticalAlignment="Top" Width="90"/>
+                <RadioButton IsChecked="{Binding SearchPreferences, UpdateSourceTrigger=PropertyChanged, Converter={StaticResource MultiBoolToEnumConverter}, ConverterParameter=All}" Content="Any/All" HorizontalAlignment="Left" Margin="298,3,0,0" VerticalAlignment="Top" Width="60"/>
+
+                <Label Content="Other Options:" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="0,26,0,0"/>
+                <CheckBox IsChecked="{Binding CaseSensitive, UpdateSourceTrigger=PropertyChanged}" Content="Case Sensitive" HorizontalAlignment="Left" Margin="93,29,0,0" VerticalAlignment="Top" Width="100"/>
+                <CheckBox IsChecked="{Binding SearchRecursive, UpdateSourceTrigger=PropertyChanged}" Content="Search Recursively" HorizontalAlignment="Left" Margin="198,29,0,0" VerticalAlignment="Top" Width="120"/>
+                <CheckBox IsChecked="{Binding IgnoreExtension, UpdateSourceTrigger=PropertyChanged}" Content="Ignore File Extension" HorizontalAlignment="Left" Margin="323,29,0,0" VerticalAlignment="Top" Width="132"/>
+            </Grid>
+        </Grid>
+        <Separator VerticalAlignment="Top" Margin="0,114,0,0"/>
+        <Grid Margin="0,120,0,75">
+            <Label Content="Results List" HorizontalAlignment="Left" VerticalAlignment="Top"/>
+            <Button Command="{Binding ExportResultsCommand}" Content="Copy results to folder" VerticalAlignment="Top" HorizontalAlignment="Right" Width="140" Height="26" BorderBrush="{DynamicResource ControlBrightDefaultBorderBrush}" BorderThickness="1 1 1 0" Margin="0,0,80,0"/>
+            <Button Command="{Binding ClearResultsCommand}" Content="Clear" VerticalAlignment="Top" HorizontalAlignment="Right" Width="75" Height="26" BorderBrush="{DynamicResource ControlBrightDefaultBorderBrush}" BorderThickness="1 1 1 0"/>
+            <ListBox ItemsSource="{Binding Results, UpdateSourceTrigger=PropertyChanged}"
+                     HorizontalContentAlignment="Stretch"
+                     ScrollViewer.HorizontalScrollBarVisibility="Disabled" Margin="0,26,0,0">
+                <!-- The ItemsSource is a ResultItemViewModel collection, -->
+                <!-- Meaning you can use the ItemTemplate to bind to the ViewModel -->
+                <!-- The DataContext = {Binding} because that is the ResultItemViewModel -->
+                <ListBox.ItemTemplate>
+                    <DataTemplate>
+                        <results:ResultControl DataContext="{Binding}"/>
+                    </DataTemplate>
+                </ListBox.ItemTemplate>
+            </ListBox>
+        </Grid>
+        <Grid Height="75" VerticalAlignment="Bottom">
+            <Grid Height="26" VerticalAlignment="Top">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="8*"/>
+                    <ColumnDefinition Width="10*"/>
+                    <ColumnDefinition Width="10*"/>
+                </Grid.ColumnDefinitions>
+                <Label Content="Items Found:" HorizontalAlignment="Left"/>
+                <Label Content="{Binding Results.Count, UpdateSourceTrigger=PropertyChanged}" Margin="78,0,0,0" Padding="0 5 5 5"/>
+
+                <Label Content="Folders Searched:" HorizontalAlignment="Left" Grid.Column="1"/>
+                <Label Content="{Binding FoldersSearched, UpdateSourceTrigger=PropertyChanged}" Margin="103,0,0,0" Padding="0 5 5 5" Grid.Column="1"/>
+                <Label Content="Files Searched:" HorizontalAlignment="Left" Grid.Column="2"/>
+                <Label Content="{Binding FilesSearched, UpdateSourceTrigger=PropertyChanged}" Margin="88,0,0,0" Padding="0 5 5 5" Grid.Column="2"/>
+            </Grid>
+            <Grid Margin="0,26,0,0">
+                <Label Content="Currently Searching:" VerticalAlignment="Top" HorizontalAlignment="Left"/>
+                <Label Content="{Binding CurrentlySearching, UpdateSourceTrigger=PropertyChanged}" VerticalAlignment="Top" Margin="116,0,0,0" Padding="0 5 5 5"/>
+                <ProgressBar IsIndeterminate="{Binding IsSearching, UpdateSourceTrigger=PropertyChanged}" Margin="0,26,0,0"/>
+            </Grid>
+        </Grid>
+    </Grid>
+</Window>

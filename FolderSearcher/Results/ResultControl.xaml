@@ -1,0 +1,23 @@
+﻿<UserControl x:Class="FolderSearcher.Results.ResultControl"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:FolderSearcher.Results" 
+             xmlns:controls="clr-namespace:FolderSearcher.Controls"
+             xmlns:Converters="clr-namespace:FolderSearcher.Converters"
+             mc:Ignorable="d" 
+             Height="40" d:DesignWidth="500" Foreground="{DynamicResource ControlDefaultForeground}">
+    <UserControl.Resources>
+        <Converters:FileNameToExtensionConverter x:Key="FileNameToExtensionConverter"/>
+        <Converters:FileSizeFormatterConverter x:Key="FileSizeFormatterConverter"/>
+        <Converters:IconToImageSourceConverter x:Key="IconToImageSourceConverter"/>
+    </UserControl.Resources>
+    <Grid>
+        <Image Source="{Binding Image, UpdateSourceTrigger=PropertyChanged, Converter={StaticResource IconToImageSourceConverter}}" HorizontalAlignment="Left" Width="32" Height="32"/>
+        <TextBlock Text="{Binding FileName, UpdateSourceTrigger=PropertyChanged, Converter={StaticResource FileNameToExtensionConverter}, FallbackValue=FileExtension}" ToolTip="{Binding Text, RelativeSource={RelativeSource Self}}" Margin="0,2,0,0" TextWrapping="NoWrap" TextTrimming="CharacterEllipsis" VerticalAlignment="Top" HorizontalAlignment="Right" Width="60"/>
+        <controls:HighlightableTextBlock Text="{Binding FileName, UpdateSourceTrigger=PropertyChanged, FallbackValue=FileName}" Selection="{Binding Selection, UpdateSourceTrigger=PropertyChanged, FallbackValue=Selection}" ToolTip="{Binding Text, RelativeSource={RelativeSource Self}}" Margin="37,2,132,0" VerticalAlignment="Top" FontWeight="Bold"/>
+        <TextBlock Text="{Binding FilePath, UpdateSourceTrigger=PropertyChanged, FallbackValue=FilePath}" ToolTip="{Binding Text, RelativeSource={RelativeSource Self}}" Margin="37,0,0,2" TextWrapping="NoWrap" VerticalAlignment="Bottom"/>
+        <TextBlock Text="{Binding FileSizeBytes, UpdateSourceTrigger=PropertyChanged, Converter={StaticResource FileSizeFormatterConverter}, FallbackValue=FileSizeByte}" ToolTip="{Binding Text, RelativeSource={RelativeSource Self}}" Margin="0,2,62,0" TextWrapping="NoWrap" TextTrimming="CharacterEllipsis" VerticalAlignment="Top" HorizontalAlignment="Right" Width="65"/>
+    </Grid>
+</UserControl>
